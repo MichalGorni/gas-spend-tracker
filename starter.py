@@ -3,7 +3,7 @@ from tkinter import ttk
 from ttkthemes import ThemedTk
 import os
 
-from views import new_refuel, refuel_summary, user_overwiev
+from views import new_refuel, refuel_summary, user_overview
 
 
 class StarterWindow(ThemedTk):
@@ -44,7 +44,7 @@ class StarterWindow(ThemedTk):
         nr.mainloop()
 
     def open_user_overwiev(self):
-        uv = user_overwiev.UserOverwiev()
+        uv = user_overview.UserOverwiev()
         uv.mainloop()
 
     def open_refuel_summary(self):
