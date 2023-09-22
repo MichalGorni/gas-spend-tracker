@@ -6,11 +6,15 @@ class DataBaseConnector:
     """Database operator class, which provides database connection"""
 
     def __init__(self) -> None:
-        self.conn = sqlite3.connect(rf"database\gastracker.db")
+        self.conn = sqlite3.connect(
+            rf"C:\Users\gorni\OneDrive\Pulpit\PYTHON\gas_spend_tracker\database\gastracker.db"
+        )
         self.c = self.conn.cursor()
 
-    def create_users_table(self):
-        """Creates database"""
+    def create_users_table(self) -> None:
+        """
+        Creates table "user"
+        """
         self.c.execute(
             f"""CREATE TABLE users (
                 user_ID INTEGER PRIMARY KEY,
@@ -22,7 +26,10 @@ class DataBaseConnector:
         self.conn.commit()
         self.conn.close()
 
-    def create_refuel_table(self):
+    def create_refuel_table(self) -> None:
+        """
+        Creates table "refuel"
+        """
         self.c.execute(
             f"""CREATE TABLE refuel (
                 refuel_ID PRIMARY KEY,
@@ -38,12 +45,20 @@ class DataBaseConnector:
         self.conn.commit()
         self.conn.close()
 
-    def count_length(self, table_name):
+    def count_length(self, table_name: str) -> int:
+        """
+        Checks number of rows in a given table.
+        Returns integer with a number of rows in a table + 1
+        :param table_name - name of table to be checked
+        """
         self.c.execute(f"SELECT COUNT(*) FROM {table_name}")
         length = self.c.fetchone()[0]
         return length + 1
 
-    def add_user(self, name):
+    def add_user(self, name: str):
+        """ "
+        Adds new user to the table "users"
+        """
         # id = self.count_length('users')
         with self.conn:
             self.c.execute(
@@ -52,7 +67,10 @@ class DataBaseConnector:
             )
         print("User added")
 
-    def get_user_id(self, name):
+    def get_user_id(self, name: str) -> int:
+        """
+        Fetches user id from table "users" by given name
+        """
         with self.conn:
             self.c.execute(
                 f"SELECT user_ID FROM users WHERE name=:name", {"name": name}
@@ -60,7 +78,11 @@ class DataBaseConnector:
         user_id = self.c.fetchone()
         return user_id[0]
 
-    def get_user_by_name(self, name):
+    def get_user_by_name(self, name: str) -> tuple:
+        """
+        Fetches user data by it's name from the "users" table.
+        Returns tuple with user data
+        """
         with self.conn:
             self.c.execute(
                 f"SELECT km, spend FROM users WHERE name=:name", {"name": name}
@@ -72,21 +94,31 @@ class DataBaseConnector:
         # return km, spend
         return user
 
-    def get_user(self, ID):
+    def get_user(self, id: int) -> tuple:
+        """
+        Gets user data by given id number.
+        Returns tuple with user data.
+        """
         with self.conn:
             self.c.execute(
-                "SELECT * FROM users WHERE user_ID=:user_ID", {"user_ID": ID}
+                "SELECT * FROM users WHERE user_ID=:user_ID", {"user_ID": id}
             )
         return self.c.fetchone()
 
-    def update_user(self, name, km, spend):
+    def update_user(self, name: str, km: float, spend: float) -> None:
+        """
+        Updates user info in the table "users".
+        """
         with self.conn:
             self.c.execute(
                 "UPDATE users SET km=:km,spend=:spend WHERE name=:name",
                 {"km": km, "spend": spend, "name": name},
             )
 
-    def add_refuel(self, list):
+    def add_refuel(self, data: list) -> None:
+        """
+        Inserts new refuel data into the "refuel" table.
+        """
         with self.conn:
             self.c.execute(
                 f"""INSERT INTO refuel (
@@ -108,23 +140,28 @@ class DataBaseConnector:
                 :avg_cons)
                 """,
                 {
-                    "date": list[0],
-                    "km": list[1],
-                    "total_cost": list[2],
-                    "cost_per_liter": list[3],
-                    "cost_per_km": list[4],
-                    "liters": list[5],
-                    "avg_cons": list[6],
+                    "date": data[0],
+                    "km": data[1],
+                    "total_cost": data[2],
+                    "cost_per_liter": data[3],
+                    "cost_per_km": data[4],
+                    "liters": data[5],
+                    "avg_cons": data[6],
                 },
             )
         print("Refuel added")
 
-    def get_refuel_info(self, *arg: int):
-        if arg:
+    def get_refuel_info(self, refuel_id: int | None = None) -> tuple:
+        """
+        Fetches data from the "refuel" table.
+        Optional param "refuel_id" - if passed then only data for a given refuel is fetched.
+        If "refuel_id" is not passed, then all data will be fetched.
+        """
+        if refuel_id:
             with self.conn:
                 self.c.execute(
                     "SELECT * FROM refuel WHERE refuel_ID=:ID ORDER BY date ASC;",
-                    {"ID": arg[0]},
+                    {"ID": refuel_id[0]},
                 )
             inf = self.c.fetchall()
         else:
@@ -133,17 +170,29 @@ class DataBaseConnector:
             inf = self.c.fetchall()
         return inf
 
-    def delete_col(self, table, column_name):
+    def delete_col(self, table: str, column_name: str) -> None:
+        """
+        Deletes selected column from a given table.
+        """
         with self.conn:
             self.c.execute(f"ALTER TABLE {table} DROP COLUMN {column_name}")
 
-    def get_newest_id(self):
+    def get_newest_id(self) -> int:
+        """
+        Gets newest id from the "refuel" table.
+        Returns integer.
+        """
         with self.conn:
             self.c.execute(f"SELECT MAX(refuel_ID) FROM refuel")
         id = self.c.fetchone()
         return id[0]
 
-    def add_ref_con(self, refid, usid, userkm, usershare, userspend):
+    def add_ref_con(
+        self, refid: int, usid: int, userkm: float, usershare: float, userspend: float
+    ) -> None:
+        """
+        Inserts new record into "ref_us_con" table
+        """
         with self.conn:
             self.c.execute(
                 f"""INSERT INTO ref_us_con (
@@ -169,7 +218,10 @@ class DataBaseConnector:
                 },
             )
 
-    def get_all_users(self):
+    def get_all_users(self) -> list:
+        """
+        Fetches all user data from the "users" table
+        """
         with self.conn:
             self.c.execute("SELECT * FROM users")
         user_list = self.c.fetchall()
@@ -183,7 +235,11 @@ class DataBaseConnector:
             km.append(user[1])
             spend.append(user[2])
 
-    def historical(self, user_ID):
+    def historical(self, user_id: int) -> tuple:
+        """
+        Returns historical data of an user by given user id.
+        Data is feched from tables "refule" and "ref_us_con"
+        """
         with self.conn:
             self.c.execute(
                 """SELECT refuel.date, ref_us_con.user_km,ref_us_con.user_share,ref_us_con.user_spend
@@ -194,7 +250,7 @@ class DataBaseConnector:
                             WHERE user_ID=:user_ID
                             ORDER BY
                                 refuel.date ASC;""",
-                {"user_ID": user_ID},
+                {"user_ID": user_id},
             )
         return self.c.fetchall()
 
@@ -205,5 +261,5 @@ if __name__ == "__main__":
     # # d.create_users_table()
     # id = d.get_user_id('Michał')
     # print(id + 2)
-    data = d.get_refuel_info()
-    print(data)
+    # d.create_refuel_table()
+    d.create_users_table()

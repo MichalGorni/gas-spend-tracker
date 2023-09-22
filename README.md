@@ -6,3 +6,4 @@ Gas Spend Tracker is an application that helps to keep track of your spend on ga
 
 ## Structure
 Application contains multiple views
+Some of them are good, some not
