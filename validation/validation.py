@@ -2,17 +2,25 @@ from datetime import date
 
 
 class NewRefValidation:
+    """
+    Class used for validating data entries
+    """
+
     def __init__(self) -> None:
         pass
 
-    def validate_refuel(self, lista):
+    def validate_refuel(self, data: list) -> tuple[list, list]:
+        """
+        Checks if all required data has been provided.
+        Normalizes float inputs.
+        """
         errors = []
         info = []
-        if type(lista[0]) != date or len(str(lista[0])) == 0:
+        if type(data[0]) != date or len(str(data[0])) == 0:
             errors.append("Wrong Date!")
         else:
-            info.append(lista[0])
-        for item in lista[1:]:
+            info.append(data[0])
+        for item in data[1:]:
             if len(str(item)) != 0:
                 if "," in item:
                     item = item.replace(",", ".")
@@ -24,20 +32,26 @@ class NewRefValidation:
         print(info)
         return list(dict.fromkeys(errors)), info
 
-    def check_kilometers(self, value, users_list):
+    def check_kilometers(self, total: float, users_list: list) -> int:
+        """
+        Checks if total kiloemeters matches sum of kilometers per user.
+        """
         lista = []
         for item in users_list:
             lista.append(item[1])
-        if value == sum(lista):
+        if total == sum(lista):
             return 1
         else:
             return 0
 
-    def user_validation(self, lista):
+    def user_validation(self, data: list) -> tuple[list, list]:
+        """
+        Validates weather user name has been provided.
+        """
         print("Validating data...")
         error = []
         correct_list = []
-        for entry in lista:
+        for entry in data:
             if len(entry[0]) > 0 and len(str(entry[1])) > 0:
                 print(f"{entry} is correct")
                 correct_list.append((entry[0], float(entry[1])))
@@ -49,12 +63,3 @@ class NewRefValidation:
                 print(f"{entry} to be removed")
 
         return error, correct_list
-
-
-if __name__ == "__main__":
-    dict1 = ["asda", "assa"]
-    dict2 = [0, ""]
-
-    v = NewRefValidation()
-    er = v.check_entries(dict1, dict2)
-    print(er)
