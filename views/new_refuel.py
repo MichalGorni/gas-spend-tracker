@@ -14,7 +14,11 @@ db = DataBaseConnector()
 
 
 class NewRefuel(ThemedTk):
-    def __init__(self, theme="arc"):
+    """
+    Class creates a window allowing user passing information about latest refuel.
+    """
+
+    def __init__(self, theme="arc") -> None:
         ThemedTk.__init__(self, fonts=True, themebg=True)
         self.set_theme(theme)
         self._window_config()
@@ -22,13 +26,20 @@ class NewRefuel(ThemedTk):
         summary = ttk.Button(self, text="Create Summary", command=self.summary)
         summary.place(x=250, y=300)
         self.up = UserPanel(window=self)
+        self.val = NewRefValidation()
 
-    def _window_config(self):
+    def _window_config(self) -> None:
+        """
+        Window configuration.
+        """
         self.title("New Refuel")
         self.geometry("700x350")
         self.resizable(False, False)
 
-    def refuel_panel(self):
+    def refuel_panel(self) -> None:
+        """
+        Creates panel for passing refuel details
+        """
         frame = ttk.Labelframe(self, text="Refuel Details")
         frame.place(x=10, y=10, width=300, height=250)
         self.cal = DateEntry(
@@ -59,7 +70,10 @@ class NewRefuel(ThemedTk):
         self.gas_cost = ttk.Entry(frame)
         self.gas_cost.place(x=150, y=110, width=80)
 
-    def get_ref_info(self):
+    def get_ref_info(self) -> list:
+        """
+        Function extracts information provided by user in a form.
+        """
         date = self.cal.get_date()
         kilometers = self.ref_km.get()
         cost = self.ref_cost.get()
@@ -73,28 +87,36 @@ class NewRefuel(ThemedTk):
         for item in info:
             print(type(item))
         val = NewRefValidation()
-        errors, lista = val.validate_refuel(info)
+        errors, data = val.validate_refuel(info)
         if len(errors) > 0:
             text = "\n".join(errors)
             # messagebox.showerror(title='Błąd wprowadzania',message=text)
             return 0
-        return lista
+        return data
 
-    def validation(self):
+    def validation(self) -> tuple[list, list]:
+        """
+        Function valides data provided by user.
+        Returnes refuel details and users' details.
+        """
         ref_info = self.get_ref_info()
         users = self.up.pass_entries()
-        val = NewRefValidation()
+
         if ref_info == 0:
             messagebox.showerror(title="Error", message="Review Refuel Details!")
         elif type(users) == str:
             messagebox.showerror(title="Error", message=users)
-        elif val.check_kilometers(ref_info[1], users) == 0:
+        elif self.val.check_kilometers(ref_info[1], users) == 0:
             messagebox.showerror(
                 title="Error", message="Amount of kilometers does not sum up!"
             )
         return ref_info, users
 
-    def summary(self):
+    def summary(self) -> None:
+        """
+        Function aggretes data validation and calculations.
+        Creates window with refuel summary.
+        """
         ref_info, users = self.validation()
         calc = RefuelCalc(ref_info, users)
         route_info = calc.route_info()
@@ -104,7 +126,11 @@ class NewRefuel(ThemedTk):
 
 
 class UserPanel:
-    def __init__(self, window):
+    """
+    Class stands for user panel in refuel window interface.
+    """
+
+    def __init__(self, window) -> None:
         self.window = window
         self.users = []
         self.kms = []
@@ -125,7 +151,10 @@ class UserPanel:
         header1.place(x=170, y=10)
         self.user_entry(self.y)
 
-    def user_entry(self, row, name="", kmval=""):
+    def user_entry(self, row, name="", kmval="") -> None:
+        """
+        Creates form for passing user details.
+        """
         counta = 1
         for _ in range(0, 6):
             count = ttk.Label(self.frame, text=counta)
@@ -143,9 +172,12 @@ class UserPanel:
             counta += 1
         self.users[0][0].focus()
 
-    def data_validation(self, list):
+    def __data_validation(self, data: list) -> None:
+        """
+        Function validates user data.
+        """
         Valid = NewRefValidation()
-        errors, users = Valid.user_validation(list)
+        errors, users = Valid.user_validation(data)
         if len(errors) > 0:
             text = "\n".join(errors)
             # messagebox.showerror(title='Coś poszło nie tak',message=text)
@@ -154,15 +186,19 @@ class UserPanel:
             # messagebox.showinfo(title='Sukces',message='Wszystkie pola poprawnie')
         return users
 
-    def pass_entries(self):
+    def pass_entries(self) -> None:
+        """
+        Extracts data from user form, passes to the validation function.
+        Returns a list with user data.
+        """
         users = []
         for row in self.users:
             users.append((row[0].get(), row[1].get()))
             print(users)
-        users = self.data_validation(users)
+        users = self.__data_validation(users)
         return users
 
-    def remove_button(self):
+    def remove_button(self):  # to be removed
         self.user.destroy()
         self.km.destroy()
         self.delete.destroy()
@@ -175,23 +211,34 @@ class UserPanel:
 
 
 class SummaryWindow(ThemedTk):
-    def __init__(self, route_info, users_info, theme="arc"):
+    """
+    GUI showing user summary of provided data.
+    Class inheritates from ThemedTk object.
+    """
+
+    def __init__(self, route_info: list, users_info: list, theme="arc") -> None:
         ThemedTk.__init__(self, fonts=True, themebg=True)
         self.route_info = route_info
         self.users_info = users_info
         self.set_theme(theme)
-        self._window_config()
-        self._route_display()
+        self.__window_config()
+        self.__route_display()
         self.users_display()
         self.save = ttk.Button(self, text="Save", command=self.save_data)
         self.save.place(x=5, y=5)
 
-    def _window_config(self):
+    def __window_config(self) -> None:
+        """
+        Window properties configuration.
+        """
         self.title("Summary")
         self.geometry("800x500")
         self.resizable(False, False)
 
-    def _route_display(self):
+    def __route_display(self) -> None:
+        """
+        Displays route details in a labaled frame.
+        """
         frame = ttk.Labelframe(self, text="Route Details")
         frame.place(x=10, y=40, width=200, height=450)
         header_font = ("Helvetica bold", 11)
@@ -214,7 +261,10 @@ class SummaryWindow(ThemedTk):
             ttk.Label(frame, text=info, font=text_font).place(x=x, y=y)
             y += 40
 
-    def users_display(self):
+    def users_display(self) -> None:
+        """
+        Display user details in a labeled frame with a table.
+        """
         frame = ttk.Labelframe(self, text="User Details")
         frame.place(x=250, y=40, width=450, height=300)
         columns = ("Name", "Kilometers", "Share (%)", "Spend (zł)")
@@ -227,7 +277,10 @@ class SummaryWindow(ThemedTk):
         for column in columns:
             tree.column(column, anchor=W, width=100)
 
-    def save_data(self):
+    def save_data(self) -> None:
+        """
+        Loads data to the database.
+        """
         db.add_refuel(self.route_info)
         refid = db.get_newest_id()
         for user in self.users_info:
@@ -235,7 +288,7 @@ class SummaryWindow(ThemedTk):
             if check == None:
                 ms = messagebox.askquestion(
                     title="Warning!",
-                    message=f'There is no "{user[0]}" in database, add?',
+                    message=f'There is no "{user[0]}" in database, do you want to add {user[0]} to the database?',
                 )
                 if ms == "yes":
                     db.add_user(name=user[0])

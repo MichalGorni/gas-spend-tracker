@@ -8,24 +8,25 @@ db = DataBaseConnector()
 
 
 class User:
-    def __init__(self, name):
+    def __init__(self, name: str):
         self.name = name
+        self.db = DataBaseConnector()
         try:
             self.get_user_info()
         except:
             print("User not found")
             print("Creating new user...")
-            db.add_user(self.name)
+            self.db.add_user(self.name)
             self.get_user_info()
 
     def check_user(self):
         try:
-            db.get_user_by_name(self.name)
+            self.db.get_user_by_name(self.name)
         except:
             return None
 
     def get_user_info(self):
-        self.km, self.spend = db.get_user_by_name(self.name)
+        self.km, self.spend = self.db.get_user_by_name(self.name)
         return self.km, self.spend
 
     def show_info(self):
@@ -36,7 +37,7 @@ class User:
     def update(self, km, spend):
         self.km = self.km + km
         self.spend = self.spend + spend
-        db.update_user(self.name, self.km, self.spend)
+        self.db.update_user(self.name, self.km, self.spend)
 
 
 if __name__ == "__main__":
