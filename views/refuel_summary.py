@@ -10,19 +10,30 @@ db = DataBaseConnector()
 
 
 class RefuelSummary(ThemedTk):
-    def __init__(self, theme: str = "arc"):
+    """
+    Class provides GUI for summary of all refuels.
+    Inheritates from ThemedTk object.
+    """
+
+    def __init__(self, theme: str = "arc") -> None:
         ThemedTk.__init__(self, fonts=True, themebg=True)
         self.set_theme(theme)
         self._window_config()
         self.prepare_tree()
         # self.chart()
 
-    def _window_config(self):
+    def _window_config(self) -> None:
+        """
+        Window's properties configuration.
+        """
         self.geometry("700x300")
         self.title("Refuel Summary")
         self.resizable(False, False)
 
-    def prepare_tree(self):
+    def prepare_tree(self) -> None:
+        """
+        Retreives data from database and prepare a treeview.
+        """
         columns = (
             "ID",
             "Date",

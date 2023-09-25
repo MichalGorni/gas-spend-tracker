@@ -10,9 +10,12 @@ db = DataBaseConnector()
 
 
 class UserOverwiev(ThemedTk):
-    """Class providing interface on user overview"""
+    """
+    Class provides GUI for overview of all users.
+    Inheritates from ThemedTk object.
+    """
 
-    def __init__(self, theme: str = "arc"):
+    def __init__(self, theme: str = "arc") -> None:
         ThemedTk.__init__(self, fonts=True, themebg=True)
         self.set_theme(theme)
         self._window_config()
@@ -24,11 +27,17 @@ class UserOverwiev(ThemedTk):
             font=("Helvetica", 8),
         ).place(x=20, y=5)
 
-    def _window_config(self):
+    def _window_config(self) -> None:
+        """
+        Window's properties configuration.
+        """
         self.geometry("600x300")
         self.title("Users Summary")
 
-    def _prepare_treeview(self):
+    def _prepare_treeview(self) -> None:
+        """
+        Retreives data from database and creates a treeview.
+        """
         columns = ("ID", "Name", "Kilometers", "Spend")
         self.tree = ttk.Treeview(self, columns=columns, show="headings")
         self.tree.place(x=20, y=30)
@@ -45,7 +54,10 @@ class UserOverwiev(ThemedTk):
                 self.tree.column(column, anchor=CENTER, width=70)
         self.tree.bind("<Double-1>", self.double_click)
 
-    def users_summary(self):
+    def users_summary(self) -> None:
+        """
+        Provides a specific user overview.
+        """
         km = []
         spend = []
         for user in self.users_data:
@@ -62,7 +74,10 @@ class UserOverwiev(ThemedTk):
             x=350, y=160
         )
 
-    def double_click(self, event):
+    def double_click(self, event) -> None:
+        """
+        Event command opening invoking UserSummary object.
+        """
         item = self.tree.selection()
         user_id = self.tree.item(item, "values")[0]
         summary = UserSummary(user_id)
