@@ -3,7 +3,10 @@ import sqlite3
 
 
 class DataBaseConnector:
-    """Database operator class, which provides database connection"""
+    """
+    Class enables connectio to the database.
+    Provides set of query function allowing accessing data.
+    """
 
     def __init__(self) -> None:
         self.conn = sqlite3.connect(
