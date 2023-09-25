@@ -6,7 +6,7 @@ import sys
 
 from database.db_operations import DataBaseConnector
 from validation.validation import NewRefValidation
-from calculations.refulec_calculations import RefuelCalculations
+from calculations.refuel_calculations import RefuelCalculations
 
 from user import User
 
