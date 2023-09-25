@@ -85,7 +85,11 @@ class UserOverwiev(ThemedTk):
 
 
 class UserSummary(ThemedTk):
-    def __init__(self, user_id: int, theme: str = "arc"):
+    """
+    Class provides GUI for specific user datails.
+    """
+
+    def __init__(self, user_id: int, theme: str = "arc") -> None:
         ThemedTk.__init__(self, fonts=True, themebg=True)
         self.user_id = int(user_id)
         self.set_theme(theme)
@@ -94,11 +98,18 @@ class UserSummary(ThemedTk):
         self.historical_view()
         self.mainloop()
 
-    def _window_config(self):
+    def _window_config(self) -> None:
+        """
+        Window's properties config.
+        """
         self.geometry("600x300")
         self.title(rf"Summary - {self.username}")
 
-    def get_user_basics(self):
+    def get_user_basics(self) -> None:
+        """
+        Retreives user data from a database.
+        Creates GUI elements.
+        """
         data = db.get_user(self.user_id)
         self.username = data[1]
         headers = ["Sum of Kilometers:", "Sum of Spend:"]
@@ -109,7 +120,11 @@ class UserSummary(ThemedTk):
             ttk.Label(self, text=entry, font=("Healvetica", 15)).place(x=400, y=y)
             y += 40
 
-    def historical_view(self):
+    def historical_view(self) -> None:
+        """
+        Retreives user's historical data from a database.
+        Creates a tree widget and inserts data.
+        """
         data = db.historical(self.user_id)
         columns = ("Date", "Kilometers", "Share (%)", "Spend (zł)")
         tree = ttk.Treeview(self, columns=columns, show="headings")
@@ -119,7 +134,6 @@ class UserSummary(ThemedTk):
         for column in columns:
             tree.heading(column, text=column)
             tree.column(column, anchor=W, width=80)
-        print("Done")
 
 
 if __name__ == "__main__":
