@@ -118,7 +118,7 @@ class NewRefuel(ThemedTk):
         Creates window with refuel summary.
         """
         ref_info, users = self.validation()
-        calc = RefuelCalc(ref_info, users)
+        calc = RefuelCalculations(ref_info, users)
         route_info = calc.route_info()
         user_info = calc.users_info()
         print(user_info)
